@@ -158,6 +158,18 @@ class DatashareClient:
             search_after = response['hits']['hits'][-1]['sort']
             response = self.query(search_after=search_after, **kwargs)
 
+    def aggregate(self, **kwargs):
+        response = self.query(**kwargs)
+        
+        # get aggregation name of first level 
+        agg_name = kwargs['q']['aggs'].keys()[0]
+
+        if int(response['_shards']['failed']) == 0:
+            for item in response['aggregations'][agg_name]['buckets']:
+                yield item
+            # search_after = response['hits']['hits'][-1]['sort']
+            # response = self.query(search_after=search_after, **kwargs)
+
     def count(self, index=DATASHARE_DEFAULT_PROJECT, query=None):
         if query is None: query = {}
         url = urljoin(self.elasticsearch_host, index, '_count')
