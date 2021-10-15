@@ -168,6 +168,7 @@ def export_by_query(**options):
                                           'capabilities of Elasticsearch (useful when dealing with a lot of results)',
               default=None)
 @click.option('--query', help='The query string to filter documents', default='*')
+@click.option('--aggs', help='The aggregation clause as string', default=None)
 @click.option('--output-file', help='Path to the CSV file', default='tarentula_aggregates.csv')
 @click.option('--cookies', help='Key/value pair to add a cookie to each request to the API. You can separate'
                                 'semicolons: key1=val1;key2=val2;...', default='')

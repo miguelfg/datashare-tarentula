@@ -162,13 +162,15 @@ class DatashareClient:
         response = self.query(**kwargs)
         
         # get aggregation name of first level 
-        agg_name = kwargs['q']['aggs'].keys()[0]
+        agg_name = next(iter(response['aggregations']))
+        # TODO:_this two response values might be interesting to be logged
+        # print( response['aggregations'][agg_name]['doc_count_error_upper_bound'] )
+        # print( response['aggregations'][agg_name]['sum_other_doc_count'] )
 
         if int(response['_shards']['failed']) == 0:
-            for item in response['aggregations'][agg_name]['buckets']:
-                yield item
-            # search_after = response['hits']['hits'][-1]['sort']
-            # response = self.query(search_after=search_after, **kwargs)
+            return response['aggregations'][agg_name]['buckets']
+        
+        return[]
 
     def count(self, index=DATASHARE_DEFAULT_PROJECT, query=None):
         if query is None: query = {}

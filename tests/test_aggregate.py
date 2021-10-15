@@ -6,7 +6,7 @@ from os.path import join
 from tempfile import TemporaryDirectory
 
 from tarentula.cli import cli
-from .test_abstract import TestAbstract
+from tests.test_abstract import TestAbstract
 
 
 class TestAggregate(TestAbstract):
@@ -19,36 +19,17 @@ class TestAggregate(TestAbstract):
 
             runner = CliRunner()
             runner.invoke(cli, ['aggregate', '--datashare-url', self.datashare_url, '--elasticsearch-url',
-                                self.elasticsearch_url, '--datashare-project', self.datashare_project, '--query',
-                                '*', '--output-file', output_file])
+                                self.elasticsearch_url, '--datashare-project', self.datashare_project, '--output-file', output_file])
 
             with open(output_file, newline='') as csv_file:
                 csv_reader = csv.DictReader(csv_file)
+                # {'key': 'audio/vorbis', 'doc_count': '2'}
+
+                # Header
+                csv_reader.fieldnames
+                self.assertIn('key', csv_reader.fieldnames)
 
                 # First row
                 row = next(csv_reader)
-                self.assertEqual(row['query'], 'Actinopodidae OR Antrodiaetidae')
-                self.assertEqual(row['documentUrl'],
-                                 'http://localhost:8080/#/d/test-datashare/DWLOskax28jPQ2CjFrCo/l7VnZZEzg2fr960NWWEG')
-                self.assertEqual(row['documentId'], 'DWLOskax28jPQ2CjFrCo')
-                self.assertEqual(row['rootId'], 'l7VnZZEzg2fr960NWWEG')
-                self.assertEqual(row['contentType'], 'audio/vnd.wave')
-                self.assertEqual(row['contentLength'], '0')
-                self.assertEqual(row['path'], '')
-                datetime_object = datetime.strptime(row['extractionDate'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                self.assertIsInstance(datetime_object, datetime)
-                self.assertEqual(row['documentNumber'], '0')
-
-                # Second row
-                row = next(csv_reader)
-                self.assertEqual(row['query'], 'Actinopodidae OR Antrodiaetidae')
-                self.assertEqual(row['documentUrl'],
-                                 'http://localhost:8080/#/d/test-datashare/l7VnZZEzg2fr960NWWEG/l7VnZZEzg2fr960NWWEG')
-                self.assertEqual(row['documentId'], 'l7VnZZEzg2fr960NWWEG')
-                self.assertEqual(row['rootId'], 'l7VnZZEzg2fr960NWWEG')
-                self.assertEqual(row['contentType'], 'audio/mpeg')
-                self.assertEqual(row['contentLength'], '25')
-                self.assertEqual(row['path'], '/path/to/file.txt')
-                datetime_object = datetime.strptime(row['extractionDate'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                self.assertIsInstance(datetime_object, datetime)
-                self.assertEqual(row['documentNumber'], '1')
+                self.assertIn('key', row)
+                self.assertGreaterEqual(len(row), 2)
