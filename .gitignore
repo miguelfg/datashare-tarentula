@@ -11,4 +11,5 @@ dist
 .cache
 tmp
 ./*.csv
+tarentula_aggregates.csv
 .vscode/
