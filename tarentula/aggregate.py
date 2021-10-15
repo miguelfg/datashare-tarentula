@@ -13,7 +13,7 @@ from tarentula.datashare_client import DatashareClient
 from tarentula.logger import logger
 
 
-class ExportByQuery:
+class Aggregate:
     def __init__(self,
                  datashare_url: str = 'http://localhost:8080',
                  datashare_project: str = 'local-datashare',
@@ -79,9 +79,9 @@ class ExportByQuery:
                 }
             },
             "aggs": {
-                "totalContentLength": {
-                    "sum": {
-                        "field": "contentLength"
+                "agg1": {
+                    "count": {
+                        "field": "contentType"
                     }
                 }
             }
@@ -175,6 +175,7 @@ class ExportByQuery:
         count = self.log_matches()
         try:
             documents = self.scan_or_query_all()
+            print(documents)
             pbar = tqdm(documents, total=count, desc='Exporting %s document(s)' % count,
                         file=sys.stdout, disable=self.no_progressbar)
             with self.create_csv_file() as csvwriter:
